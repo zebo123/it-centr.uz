@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        /* Весь ваш CSS остается без изменений */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #1a1a1a;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .auth-container {
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .auth-box {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        
+        .auth-title {
+            color: #ffd700;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+        
+        .auth-input {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin: 15px 0;
+            border: 2px solid #444;
+            border-radius: 8px;
+            background: #333;
+            color: white;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .auth-input:focus {
+            border-color: #457CE3;
+            outline: none;
+        }
+        
+        .auth-button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: #457CE3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .auth-button:hover {
+            background: #3a6bc5;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .auth-error {
+            color: #ff6b6b;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background: rgba(255, 107, 107, 0.1);
+            display: none;
+        }
+        
+        .admin-panel {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #444;
+        }
+        
+        .logout-btn {
+            background: #ffc107;
+            color: black;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: #e6ac00;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .user-card {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        
+        .user-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #444;
+        }
+        
+        .user-login {
+            color: #4da6ff;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        
+        .user-balance {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .user-details {
+            margin-bottom: 20px;
+        }
+        
+        .user-detail {
+            margin: 8px 0;
+            display: flex;
+        }
+        
+        .detail-label {
+            color: #aaa;
+            width: 120px;
+        }
+        
+        .balance-control {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .amount-input {
+            padding: 12px;
+            width: 100%;
+            max-width: 150px;
+            border-radius: 8px;
+            border: 2px solid #444;
+            background: #333;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .balance-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            min-width: 120px;
+            transition: all 0.2s;
+        }
+        
+        .balance-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .add-btn {
+            background: #28a745;
+            color: white;
+        }
+        
+        .subtract-btn {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .success {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+        
+        .error {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+        
+        .user-count {
+            background: #457CE3;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Контейнер для авторизации -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-box">
+            <h2 class="auth-title">Admin Panelga Kirish</h2>
+            <input type="text" id="adminLogin" class="auth-input" 
+                   placeholder="Login" value="zeboniso">
+            
+            <input type="password" id="adminPassword" class="auth-input" 
+                   placeholder="Parol" value="zeb123zeb123">
+            
+            <button class="auth-button" onclick="loginAdmin()">KIRISH</button>
+            
+            <div id="authError" class="auth-error">
+                Xato! Login yoki parol noto'g'ri.
+            </div>
+        </div>
+    </div>
+
+    <!-- Админ-панель -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-header">
+            <h1>Admin Panel <span class="user-count" id="userCount">0</span></h1>
+            <button class="logout-btn" onclick="logoutAdmin()">Chiqish</button>
+        </div>
+        <div id="adminContent">
+            <!-- Сюда будут загружены пользователи -->
+        </div>
+    </div>
+
+    <script>
+        // Конфигурация администратора
+        const ADMIN_CREDENTIALS = {
+            login: "zeboniso",
+            password: "zeb123zeb123"
+        };
+
+        // Функция входа в админку
+        function loginAdmin() {
+            const login = document.getElementById('adminLogin').value;
+            const password = document.getElementById('adminPassword').value;
+            const errorElement = document.getElementById('authError');
+            
+            errorElement.style.display = 'none';
+            
+            if (login === ADMIN_CREDENTIALS.login && password === ADMIN_CREDENTIALS.password) {
+                document.getElementById('authContainer').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                loadUsers();
+            } else {
+                errorElement.style.display = 'block';
+            }
+        }
+
+        // Функция выхода
+        function logoutAdmin() {
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('authContainer').style.display = 'block';
+        }
+
+        // Загрузка пользователей с возможностью управления балансом
+        function loadUsers() {
+            const contentElement = document.getElementById('adminContent');
+            contentElement.innerHTML = '<p style="text-align: center; padding: 30px;">Foydalanuvchilar yuklanmoqda...</p>';
+            
+            setTimeout(() => {
+                try {
+                    const users = [];
+                    const allKeys = Object.keys(localStorage);
+                    
+                    for (const key of allKeys) {
+                        if (key === 'currentUser') continue;
+                        
+                        try {
+                            const userData = localStorage.getItem(key);
+                            const user = JSON.parse(userData);
+                            
+                            if (user && user.login && typeof user.balance === 'number') {
+                                users.push({...user, key});
+                            }
+                        } catch (e) {
+                            console.warn('Xatolik foydalanuvchi ma\'lumotlarida:', key, e);
+                        }
+                    }
+                    
+                    document.getElementById('userCount').textContent = users.length;
+                    
+                    if (users.length === 0) {
+                        contentElement.innerHTML = `
+                            <div style="text-align: center; padding: 40px;">
+                                <h3 style="color: #ffd700;">Foydalanuvchilar topilmadi!</h3>
+                                <p>Iltimos, ro'yxatdan o'tgan foydalanuvchilarni tekshiring</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    let usersHTML = `
+                        <div class="users-grid">
+                    `;
+                    
+                    users.forEach(user => {
+                        usersHTML += `
+                            <div class="user-card" id="user-${user.key}">
+                                <div class="user-header">
+                                    <div class="user-login">${user.login}</div>
+                                    <div class="user-balance">${user.balance} SO'M</div>
+                                </div>
+                                
+                                <div class="user-details">
+                                    <div class="user-detail">
+                                        <span class="detail-label">Ism:</span>
+                                        <span>${user.name || 'Mavjud emas'}</span>
+                                    </div>
+                                    <div class="user-detail">
+                                        <span class="detail-label">Familiya:</span>
+                                        <span>${user.surname || 'Mavjud emas'}</span>
+                                    </div>
+                                    <div class="user-detail">
+                                        <span class="detail-label">Karta raqami:</span>
+                                        <span>${user.cardNumber || 'Mavjud emas'}</span>
+                                    </div>
+                                    <div class="user-detail">
+                                        <span class="detail-label">Telefon:</span>
+                                        <span>${user.phone || 'Mavjud emas'}</span>
+                                    </div>
+                                    <!-- ДОБАВЛЕНО ОТОБРАЖЕНИЕ ПАРОЛЯ -->
+                                    <div class="user-detail">
+                                        <span class="detail-label">Parol:</span>
+                                        <span>${user.password || 'Mavjud emas'}</span>
+                                    </div>
+                                    <div class="user-detail">
+                                        <span class="detail-label">Ustoz:</span>
+                                        <span>${user.mentor || 'Mavjud emas'}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="balance-control">
+                                    <input type="number" 
+                                           class="amount-input" 
+                                           id="amount-${user.key}"
+                                           value="100"
+                                           min="1">
+                                    <button class="balance-btn add-btn" 
+                                            onclick="changeBalance('${user.key}', 'add')">
+                                        + To'ldirish
+                                    </button>
+                                    <button class="balance-btn subtract-btn" 
+                                            onclick="changeBalance('${user.key}', 'subtract')">
+                                        - Yechish
+                                    </button>
+                                </div>
+                                
+                                <div class="message" id="message-${user.key}"></div>
+                            </div>
+                        `;
+                    });
+                    
+                    usersHTML += `</div>`;
+                    contentElement.innerHTML = usersHTML;
+                    
+                } catch (error) {
+                    contentElement.innerHTML = `
+                        <div style="color: #ff6b6b; padding: 20px; text-align: center;">
+                            <h3>Xatolik yuz berdi!</h3>
+                            <p>${error.message}</p>
+                        </div>
+                    `;
+                }
+            }, 1000);
+        }
+
+        // Изменение баланса пользователя (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+        function changeBalance(userKey, operation) {
+            const amountInput = document.getElementById(`amount-${userKey}`);
+            const messageElement = document.getElementById(`message-${userKey}`);
+            const amount = Number(amountInput.value);
+            
+            // Сброс сообщений
+            messageElement.textContent = '';
+            messageElement.style.display = 'none';
+            messageElement.className = 'message';
+            
+            // Проверка ввода
+            if (isNaN(amount) || amount <= 0) {
+                messageElement.textContent = 'Iltimos, toʻgʻri miqdorni kiriting!';
+                messageElement.className = 'message error';
+                messageElement.style.display = 'block';
+                return;
+            }
+            
+            // Получаем данные пользователя
+            const user = JSON.parse(localStorage.getItem(userKey));
+            if (!user) {
+                messageElement.textContent = 'Foydalanuvchi topilmadi!';
+                messageElement.className = 'message error';
+                messageElement.style.display = 'block';
+                return;
+            }
+            
+            // Изменяем баланс
+            if (operation === 'add') {
+                user.balance += amount;
+                messageElement.textContent = `+${amount} SO'M qo'shildi. Yangi balans: ${user.balance} SO'M`;
+                messageElement.className = 'message success';
+            } else if (operation === 'subtract') {
+                if (user.balance < amount) {
+                    messageElement.textContent = 'Balansda yetarli mablagʻ yoʻq!';
+                    messageElement.className = 'message error';
+                    messageElement.style.display = 'block';
+                    return;
+                }
+                user.balance -= amount;
+                messageElement.textContent = `-${amount} SO'M ayirildi. Yangi balans: ${user.balance} SO'M`;
+                messageElement.className = 'message success';
+            }
+            
+            // Сохраняем изменения
+            localStorage.setItem(userKey, JSON.stringify(user));
+            messageElement.style.display = 'block';
+            
+            // Обновляем отображение баланса
+            document.querySelector(`#user-${userKey} .user-balance`).textContent = 
+                `${user.balance} SO'M`;
+            
+            // Автоочистка сообщения
+            setTimeout(() => {
+                messageElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Автоматическая попытка входа при загрузке
+        window.onload = function() {
+            document.getElementById('adminLogin').value = ADMIN_CREDENTIALS.login;
+            document.getElementById('adminPassword').value = ADMIN_CREDENTIALS.password;
+        };
+    </script>
+</body>
+</html>
